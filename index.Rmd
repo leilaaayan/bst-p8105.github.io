@@ -1,0 +1,130 @@
+---
+title: "My awesome website"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cerulean
+---
+
+# This is Jeff's awesome website
+
+what if i add some text here....?
+
+
+
+![](https://media.giphy.com/media/drXGoW1iudhKw/giphy.gif)
+
+## Links
+Let's link to useful tools for data science:
+
+* [Google](https://www.google.com/)
+* [P8105](http://p8105.com)
+
+## Local image
+
+Here's my cat, ted:
+<img src="images/ted.jpg" style = "width:75%">
+
+## Link to page within the site
+[About me](about.html)
+
+
+# Examples of flatly
+We're gonna look at nyc airbnb data.
+```{r}
+library(tidyverse)
+library("p8105.datasets")
+library(plotly)
+```
+
+```{r}
+data("nyc_airbnb")
+
+nyc_airbnb = 
+  nyc_airbnb %>%
+  mutate(rating = review_scores_location / 2) %>%
+  select(neighbourhood_group, neighbourhood, rating, price, lat, long, room_type) %>%
+  filter(
+    neighbourhood_group =="Manhattan",
+    price %in% 100: 500, # price in the range of100 and 500
+    room_type == "Entire home/apt"
+  ) %>%
+  drop_na(rating)
+
+```
+
+
+
+# Plotly plots
+## Scatterplot
+```{r}
+nyc_airbnb %>%
+  mutate(text_label = str_c("Price: $", price, "\nRating:", rating)) %>%
+  plot_ly(
+    x = ~lat, y= ~long, color= ~price, text = ~rating, alpha = .5, type ="scatter", mode = "markers") # specify asecetic mapping
+
+
+```
+
+## boxplot
+```{r}
+nyc_airbnb %>%
+  mutate(neighbourhood = fct_reorder(neighbourhood, price)) %>%
+  plot_ly(
+    y = ~price, x = ~neighbourhood, color= ~neighbourhood,
+    type = "box", colors = "viridis")
+```
+## bar plot
+```{r}
+nyc_airbnb %>%
+  count(neighbourhood) %>%
+  mutate(neighbourhood = fct_reorder(neighbourhood, n)) %>%
+  plot_ly(x = ~neighbourhood, y= ~ n, color = ~neighbourhood, type = "bar", colors = "viridis")
+```
+
+
+# ggplotly
+
+```{r}
+ggp_scatter = 
+nyc_airbnb %>%
+  ggplot(aes(x = lat, y = long, color=price)) +
+  geom_point()
+
+ggplotly(ggp_scatter)
+```
+
+### Chart A
+
+
+
+```{r}
+library(flexdashboard)
+
+
+```
+
+
+
+Column {data-wdith=350}
+------------------------------------------------------------------------------------
+###chartc
+```{r}
+nyc_airbnb %>%
+  count(neighbourhood) %>%
+  mutate(neighbourhood = fct_reorder(neighbourhood, n)) %>%
+  plot_ly(x = ~neighbourhood, y= ~ n, color = ~neighbourhood, type = "bar", colors = "viridis")
+```
+
+
+
+
+
+
+
+
+
+
+
+
